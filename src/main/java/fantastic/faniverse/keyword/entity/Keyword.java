@@ -1,6 +1,8 @@
 package fantastic.faniverse.keyword.entity;
 
 import jakarta.persistence.*;
+import fantastic.faniverse.user.entity.User;
+import fantastic.faniverse.product.domain.Product;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,15 @@ public class Keyword {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-// 유저 아이디, 상품 아이디와 관계 맺기
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;  // 유저와의 관계 설정
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;  // 상품과의 관계 설정
+
     private String name;
 
     @Column(updatable = false)
@@ -27,6 +37,22 @@ public class Keyword {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getName() {

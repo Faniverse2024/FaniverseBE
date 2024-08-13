@@ -5,8 +5,8 @@ import fantastic.faniverse.keyword.entity.Keyword;
 import fantastic.faniverse.keyword.repository.KeywordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import fantastic.faniverse.product.ProductRepository;
-import fantastic.faniverse.product.Product;
+import fantastic.faniverse.product.domain.Product;
+import fantastic.faniverse.product.repository.ProductRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

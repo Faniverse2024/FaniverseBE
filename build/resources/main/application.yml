@@ -15,6 +15,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+cloud:
+  gcp:
+    storage:
+      credentials:
+        location: classpath:handy-curve-428107-k7-a27eaf0eb195.json
+      project-id: handy-curve-428107-k7
+
 server:
   port: 8080
 

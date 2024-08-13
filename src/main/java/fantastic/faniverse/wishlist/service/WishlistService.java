@@ -2,8 +2,8 @@ package fantastic.faniverse.wishlist.service;
 
 import fantastic.faniverse.user.repository.UserRepository;
 import fantastic.faniverse.user.entity.User;
-import fantastic.faniverse.product.ProductRepository;
-import fantastic.faniverse.product.Product;
+import fantastic.faniverse.product.repository.ProductRepository;
+import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.wishlist.dto.WishlistDto;
 import fantastic.faniverse.wishlist.entity.Wishlist;
 import fantastic.faniverse.wishlist.repository.WishlistRepository;

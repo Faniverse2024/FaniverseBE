@@ -3,7 +3,7 @@ package fantastic.faniverse.keyword.controller;
 import fantastic.faniverse.keyword.dto.KeywordDto;
 import fantastic.faniverse.keyword.entity.Keyword;
 import fantastic.faniverse.keyword.service.KeywordService;
-import fantastic.faniverse.product.Product;
+import fantastic.faniverse.product.domain.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

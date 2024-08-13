@@ -11,4 +11,4 @@
 **/._.DS_Store
 
 # Ignore .env files
-.env
+/.env
