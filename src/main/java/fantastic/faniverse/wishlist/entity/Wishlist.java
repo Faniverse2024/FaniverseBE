@@ -1,15 +1,13 @@
 package fantastic.faniverse.wishlist.entity;
 
-import fantastic.faniverse.user.entity.User;
 import fantastic.faniverse.product.domain.Product;
-
+import fantastic.faniverse.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-import lombok.Getter;
-import lombok.Setter;
-
-/*
+@Data
 @Entity
 public class Wishlist {
 
@@ -18,67 +16,34 @@ public class Wishlist {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    //Getters and Setters
-    public Long getId() {
-        return id;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 
-    public void setId(Long id) {
-        this.id = id;
+
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Wishlist wishlist = (Wishlist) o;
+        return Objects.equals(id, wishlist.id);
     }
 
-    public User getUser() {
-        return user;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-} */
-
-@Entity
-@Getter
-@Setter
-public class Wishlist {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "productId", nullable = false)
-    private Product product;
 }

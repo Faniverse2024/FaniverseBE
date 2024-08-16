@@ -19,6 +19,8 @@ public class GeneralProductRegisterRequest extends ProductRegisterRequest {
     @NotEmpty(message = "가격 입력은 필수입니다.")
     private double price;
 
+    private String imageUrl;
+
     public GeneralProduct toGeneralProductEntity(String imageUrl) {
         return GeneralProduct.builder()
                 .title(getTitle())

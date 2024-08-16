@@ -1,10 +1,17 @@
 package fantastic.faniverse.auth.controller;
 
-import fantastic.faniverse.auth.dto.UserDto;
+import fantastic.faniverse.auth.dto.LoginRequestDto;
+import fantastic.faniverse.auth.dto.LoginResponseDto;
+import fantastic.faniverse.auth.dto.LogoutResponseDto;
 import fantastic.faniverse.auth.service.AuthService;
+import fantastic.faniverse.user.entity.User;
+import fantastic.faniverse.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/auth")
@@ -13,23 +20,43 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDto userDto) {
-        String response = authService.register(userDto);
-        if ("User registered successfully".equals(response)) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.badRequest().body(response);
+    @Autowired
+    private UserService userService;
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpSession session) {
+        if (loginRequestDto.getEmail() == null || loginRequestDto.getPassword() == null) {
+            return ResponseEntity.badRequest().body(null);
         }
+
+        // 로그인 서비스에서 User 객체 반환
+        User user = authService.login(loginRequestDto);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        // 세션에 userId 저장
+        session.setAttribute("userId", user.getId());
+
+        // User 객체를 LoginResponseDto로 변환
+        LoginResponseDto loginResponseDto = new LoginResponseDto(user.getId(), user.getEmail(), user.getUsername());
+
+        return ResponseEntity.ok(loginResponseDto);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserDto userDto) {
-        String response = authService.login(userDto);
-        if ("Login successful".equals(response)) {
-            return ResponseEntity.ok(response);
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponseDto> logout(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId != null) {
+            authService.logout(userId);
+            session.invalidate(); // 세션 무효화
+            return ResponseEntity.ok(new LogoutResponseDto("Successfully logged out"));
         } else {
-            return ResponseEntity.status(401).body(response);
+            return ResponseEntity.status(400).body(new LogoutResponseDto("No user logged in"));
         }
     }
 }

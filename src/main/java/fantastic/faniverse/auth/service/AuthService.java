@@ -1,42 +1,39 @@
 package fantastic.faniverse.auth.service;
 
-import fantastic.faniverse.auth.dto.UserDto;
+import fantastic.faniverse.auth.dto.LoginRequestDto;
+import fantastic.faniverse.auth.dto.LoginResponseDto;
 import fantastic.faniverse.user.entity.User;
 import fantastic.faniverse.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class AuthService {
 
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public String register(UserDto userDto) {
-        if (userRepository.findByEmail(userDto.getEmail()) != null) {
-            return "User already exists";
-        }
-
-        User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
-        userRepository.save(user);
-        return "User registered successfully";
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public String login(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail());
-
-        if (user != null && passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            return "Login successful";
+    // 로그인 메서드
+    public User login(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail());
+        if (user != null && passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            return user; // Return the User object
         } else {
-            return "Invalid email or password";
+            return null; // Return null if authentication fails
         }
+    }
+
+    // 로그아웃 메서드
+    public void logout(Long userId) {
     }
 }

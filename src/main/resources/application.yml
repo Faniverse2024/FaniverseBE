@@ -19,7 +19,7 @@ cloud:
   gcp:
     storage:
       credentials:
-        location: classpath:handy-curve-428107-k7-a27eaf0eb195.json
+        location: classpath:handy-curve-428107-k7-6d58aaca3454.json
       project-id: handy-curve-428107-k7
 
 server:

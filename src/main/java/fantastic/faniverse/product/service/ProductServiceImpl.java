@@ -7,6 +7,7 @@ import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
 import fantastic.faniverse.product.GeneralProduct.repository.GeneralProductRepository;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProductStatus;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
+import fantastic.faniverse.product.dto.ProductDto;
 import fantastic.faniverse.product.repository.ProductRepository;
 import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.user.entity.User;
@@ -25,10 +26,9 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.stream;
 
 @Getter
-@NoArgsConstructor(force = true)
 @Transactional
-@Service
 @RequiredArgsConstructor
+@Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private final UserRepository userRepository;
@@ -39,9 +39,7 @@ public class ProductServiceImpl implements ProductService {
     //전체 상품 반환
     @Override
     public List<Product> findAllProducts() {
-        List<Product> allProducts = new ArrayList<>(auctionProductRepository.findAll());
-        allProducts.addAll(generalProductRepository.findAll());
-        return allProducts;
+        return productRepository.findAll();
     }
 
     //전체상품 중 상품 1개 찾기
@@ -97,16 +95,6 @@ public class ProductServiceImpl implements ProductService {
                 .filter((item) -> item != status).collect(Collectors.toList());
     }
 
-    /*
-    @Override
-    public Product addProduct(Long userId, Product product) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        product.setSeller(user); // Seller 설정
-        return productRepository.save(product);
-    } */
-
-
     public Long addProduct(GeneralProduct generalProduct, Long userId) {
         User seller = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -115,8 +103,6 @@ public class ProductServiceImpl implements ProductService {
         generalProductRepository.save(generalProduct);
         return generalProduct.getId();
     }
-
-
 
     public Long addProduct(AuctionProduct auctionProduct, Long userId) {
         User seller = userRepository.findById(userId)

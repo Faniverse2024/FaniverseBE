@@ -1,6 +1,9 @@
 package fantastic.faniverse.product.dto;
 
+import fantastic.faniverse.Exception.NoBidderException;
+import fantastic.faniverse.product.AuctionProduct.domain.AuctionBid;
 import fantastic.faniverse.product.AuctionProduct.domain.AuctionProduct;
+import fantastic.faniverse.product.AuctionProduct.domain.AuctionProductStatus;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
 import fantastic.faniverse.product.domain.Product;
 import lombok.AllArgsConstructor;
@@ -9,10 +12,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
 @Setter
+@Builder
 public class ProductDetailsResponse {
         private String userName;
         private String imageUrl;
@@ -23,41 +29,32 @@ public class ProductDetailsResponse {
         private LocalDateTime endDate;
         private String status;
         private Double finalPrice;
-        private Long winningUserId;
         private Double price;
-        @Getter
         private LocalDateTime createdAt;
-        private Product product;
+        private AuctionBid winningBid;
 
-        @Builder
+        //@Builder
         public ProductDetailsResponse(Product product) {
-                this.product = product;
                 this.imageUrl = product.getImageUrl();
                 this.category = product.getCategory();
                 this.content = product.getContent();
                 this.userName = product.getSeller().getUsername();
                 this.title = product.getTitle();
+
                 if (product instanceof GeneralProduct generalProduct) {
-                    this.price = generalProduct.getPrice();
-                    this.status = generalProduct.getGeneralProductStatus().getValue();
-                }
-                else {
-                        AuctionProduct auctionProduct = (AuctionProduct) product;
+                        this.price = generalProduct.getPrice();
+                        this.status = generalProduct.getGeneralProductStatus().getValue();
+                } else if (product instanceof AuctionProduct auctionProduct) {
                         this.startingPrice = auctionProduct.getStartingPrice();
                         this.endDate = auctionProduct.getEndDate();
                         this.status = auctionProduct.getAuctionProductStatus().getValue();
                         this.finalPrice = auctionProduct.getFinalPrice();
+                        this.winningBid = auctionProduct.getWinningBidNow(auctionProduct);
                 }
         }
 
         public double getPrice() {
-                // Product 객체의 실제 타입에 따라 올바른 가격을 반환
-                if (product instanceof GeneralProduct) {
-                        return ((GeneralProduct) product).getPrice();
-                } else if (product instanceof AuctionProduct) {
-                        return ((AuctionProduct) product).getStartingPrice();
-                } else {
-                        throw new IllegalStateException("Unknown product type");
-                }
+                return this.price != null ? this.price : (this.startingPrice != null ? this.startingPrice : 0.0);
         }
+
 }

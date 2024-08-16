@@ -1,13 +1,13 @@
 package fantastic.faniverse.product.AuctionProduct.domain;
 
 import fantastic.faniverse.Exception.NoBidderException;
-import fantastic.faniverse.user.entity.User;
-import lombok.experimental.SuperBuilder;
-import org.springframework.lang.Nullable;
 import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
+import fantastic.faniverse.user.entity.User;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -17,7 +17,7 @@ import java.util.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name= "AuctionProduct")
+@Table(name = "AuctionProduct")
 @Entity
 @DiscriminatorValue("auction_product")
 public class AuctionProduct extends Product {
@@ -26,19 +26,19 @@ public class AuctionProduct extends Product {
     @Enumerated(EnumType.STRING)
     private AuctionProductStatus auctionProductStatus;
 
-    @Column(name="startingPrice", nullable = false)
+    @Column(name = "startingPrice", nullable = false)
     private double startingPrice;
 
     @Nullable
-    @Column(name="finalPrice")
-    private double finalPrice;
+    @Column(name = "finalPrice")
+    private Double finalPrice;
 
     @OneToOne
     @Nullable
     @JoinColumn(name = "winningBid")
     private AuctionBid winningBid;
 
-    @Column(name="endDate", nullable = false)
+    @Column(name = "endDate", nullable = false)
     private LocalDateTime endDate;
 
     @OneToMany(mappedBy = "auctionProduct", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -46,9 +46,7 @@ public class AuctionProduct extends Product {
 
     @Override
     public ProductDetailsResponse toProductDetail() {
-        return ProductDetailsResponse.builder()
-                .product(this)
-                .build();
+        return new ProductDetailsResponse(this);
     }
 
     public void setAuctionStatus(AuctionProductStatus status) {
@@ -60,7 +58,6 @@ public class AuctionProduct extends Product {
         return startingPrice;
     }
 
-    // 입찰 추가
     public boolean placeBid(User user, Double bidAmount) {
         AuctionBid newBid = new AuctionBid(this, user, bidAmount);
 
@@ -75,47 +72,52 @@ public class AuctionProduct extends Product {
         return true;
     }
 
-    //경매 종료 여부 확인
     public boolean isAuctionEnded() {
         return LocalDateTime.now().isAfter(endDate);
     }
 
-    // 입찰 취소
-    public boolean cancelBid(User user) {
-        return bids.removeIf(bid -> bid.getUser().equals(user));
-    }
-
-    // bids 리스트에서 최고 입찰 정보 반환
-    public Optional<AuctionBid> findHighestBid() {
-        return Optional.ofNullable(winningBid)
-                .or(() -> bids.stream()
-                        .max(Comparator.comparingDouble(AuctionBid::getBidAmount)));
-    }
-
-    // 최고 입찰자 선정 - 입찰자가 없을 경우 추가
-    public void endAuction() {
-        if (!isAuctionEnded()) {
-            return;
-        }
-        if (winningBid != null) {
-            this.auctionProductStatus = AuctionProductStatus.Pending;
-        } else {
-            this.auctionProductStatus = AuctionProductStatus.FAIL;
-            throw new NoBidderException();
-        }
-    }
-
-    // 다음 최고 입찰자 선정
-    public void selectNextHighestBidder() {
-        Optional<AuctionBid> highestBid = bids.stream()
-                .filter(bid -> bid.getBidAmount() > (winningBid != null ? winningBid.getBidAmount() : Double.MIN_VALUE))
+    //현재 최고 입찰가
+    public AuctionBid getWinningBidNow(AuctionProduct auctionProduct) {
+        Optional<AuctionBid> highestBid = auctionProduct.getBids().stream()
                 .max(Comparator.comparing(AuctionBid::getBidAmount));
 
         if (highestBid.isPresent()) {
-            winningBid = highestBid.get();
+            return highestBid.get();
         } else {
-            this.auctionProductStatus = AuctionProductStatus.FAIL;
-            throw new NoBidderException(); // 더 이상 높은 입찰이 없음
+            throw new NoBidderException("현재 입찰자가 없습니다");
         }
     }
+
+    public void endAuction() {
+        // 최고 입찰자를 선정
+        Optional<AuctionBid> highestBid = bids.stream()
+                .max(Comparator.comparing(AuctionBid::getBidAmount));
+
+        if (highestBid.isPresent()) {
+            // 최고 입찰자를 winningBid로 설정하고 상태를 PENDING으로 변경
+            winningBid = highestBid.get();
+            auctionProductStatus = AuctionProductStatus.PENDING;
+        } else {
+            // 입찰자가 없으면 경매를 실패로 처리
+            auctionProductStatus = AuctionProductStatus.FAIL;
+            throw new NoBidderException("입찰자가 없어서 경매가 취소됩니다.");
+        }
+    }
+
+    public void selectNextHighestBid() {
+        // 현재 winningBid를 제외한 입찰 중에서 가장 높은 입찰 찾기
+        Optional<AuctionBid> nextHighestBid = bids.stream()
+                .filter(bid -> !bid.equals(winningBid)) // winningBid와 다른 입찰만 선택
+                .max(Comparator.comparing(AuctionBid::getBidAmount));
+
+        if (nextHighestBid.isPresent()) {
+            // 새로운 최고 입찰자로 설정
+            winningBid = nextHighestBid.get();
+        } else {
+            // 입찰자가 없으면 경매를 실패로 처리
+            this.auctionProductStatus = AuctionProductStatus.FAIL;
+            throw new NoBidderException("입찰자가 없어서 경매가 취소됩니다.");
+        }
+    }
+
 }

@@ -1,9 +1,9 @@
 package fantastic.faniverse.search.service;
 
-import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
 import fantastic.faniverse.product.repository.ProductRepository;
 import fantastic.faniverse.user.entity.User;
+import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
