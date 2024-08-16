@@ -1,5 +1,6 @@
 package fantastic.faniverse.product.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fantastic.faniverse.chat.domain.ChatRoom;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
 import fantastic.faniverse.user.entity.User;
@@ -12,6 +13,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ import java.util.List;
 @Table(name = "Product")
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@EntityListeners(AuditingEntityListener.class)
 public abstract class Product {
 
     @Id
@@ -41,7 +45,7 @@ public abstract class Product {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "imageUrl")
+    @Column(name = "image_url")
     private String imageUrl;
 
     @CreatedDate
@@ -52,7 +56,7 @@ public abstract class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sellerId")
     private User seller;
 
@@ -61,11 +65,6 @@ public abstract class Product {
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Wishlist> wishlist = new ArrayList<>();
-
-    // Remove this method or move it to a service class
-    // public void addProduct(Long userId) {
-    //     productRepository.findByUserId(userId).add(this);
-    // }
 
     // 상품 정보 변경
     public void update(Product product) {

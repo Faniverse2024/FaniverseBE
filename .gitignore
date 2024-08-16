@@ -9,6 +9,3 @@
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
-
-# Ignore .env files
-/.env

@@ -1,18 +1,17 @@
 package fantastic.faniverse.product.AuctionProduct.service;
 
+import fantastic.faniverse.product.AuctionProduct.domain.AuctionBid;
 import fantastic.faniverse.product.AuctionProduct.domain.AuctionProductStatus;
 import fantastic.faniverse.product.AuctionProduct.domain.AuctionProduct;
 import fantastic.faniverse.product.AuctionProduct.dto.AuctionProductRegisterRequest;
+import fantastic.faniverse.product.AuctionProduct.repository.AuctionBidRepository;
 import fantastic.faniverse.product.AuctionProduct.repository.AuctionProductRepository;
-import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
-import fantastic.faniverse.product.ProductImage.ImageUploadRequest;
-import fantastic.faniverse.product.ProductImage.ImageUploadService;
 import fantastic.faniverse.Exception.ProductNotFoundException;
+import fantastic.faniverse.product.ProductImage.ImageUploadService;
 import fantastic.faniverse.product.service.ProductService;
 import fantastic.faniverse.user.entity.User;
 import fantastic.faniverse.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +24,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class AuctionProductServiceImpl implements AuctionProductService {
-
+    private final AuctionBidRepository auctionBidRepository;
     private final UserRepository userRepository;
     private final AuctionProductRepository auctionProductRepository;
     private final ImageUploadService imageUploadService;
@@ -33,20 +32,24 @@ public class AuctionProductServiceImpl implements AuctionProductService {
 
     @Override
     public Long saveAuctionProduct(AuctionProductRegisterRequest request, Long userId) throws IOException {
+        // 사용자 검증
         User seller = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ProductNotFoundException("사용자를 찾을 수 없습니다"));
 
-        // 이미지 업로드
-        String imageUrl = null;
-        if (request.getImage() != null && !request.getImage().isEmpty()) {
-            ImageUploadRequest imageUploadRequest = new ImageUploadRequest();
-            imageUploadRequest.setFile(request.getImage());
-            imageUrl = imageUploadService.uploadImage(imageUploadRequest);
-        }
+        // 이미지 업로드 처리 (이미 컨트롤러에서 처리됨)
+        String imageUrl = request.getImageUrl();
 
         // AuctionProduct 엔티티 생성
         AuctionProduct auctionProduct = request.toAuctionProductEntity(imageUrl);
-        return productService.addProduct(auctionProduct, userId);
+
+        System.out.println("Image URL before save: " + auctionProduct.getImageUrl());
+
+        auctionProduct.setSeller(seller);  // seller 설정
+
+        // 상품 저장
+        auctionProductRepository.save(auctionProduct);
+
+        return auctionProduct.getId(); // 반환할 값 확인
     }
 
     @Override
@@ -77,40 +80,43 @@ public class AuctionProductServiceImpl implements AuctionProductService {
     }
 
     @Override
-    public boolean cancelBid(Long auctionProductId, Long userId) {
-        AuctionProduct auctionProduct = auctionProductRepository.findById(auctionProductId)
-                .orElseThrow(() -> new RuntimeException("Auction product not found"));
+    public boolean cancelBid(Long bidId) {
+        AuctionBid auctionBid = auctionBidRepository.findById(bidId)
+                .orElseThrow(() -> new RuntimeException("Bid not found"));
 
-        // 사용자 객체 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (auctionProduct.isAuctionEnded()) {
-            return false; // 경매가 이미 종료된 경우는 입찰 취소 불가
-        }
-
-        boolean isBidCancelled = auctionProduct.cancelBid(user);
-        auctionProductRepository.save(auctionProduct);
-
-        return isBidCancelled;
+        auctionBidRepository.delete(auctionBid);
+        return true;
     }
 
-    @Override
+    @Scheduled(cron = "0 * * * * ?") // 매 분마다 실행
+    public void checkAndEndAuctions() {
+        List<AuctionProduct> ongoingAuctions = auctionProductRepository.findByAuctionProductStatus(AuctionProductStatus.BID);
+
+        for (AuctionProduct auctionProduct : ongoingAuctions) {
+            if (auctionProduct.isAuctionEnded()) {
+                auctionProduct.endAuction();
+                auctionProductRepository.save(auctionProduct);
+            }
+        }
+    }
+
     public void endAuction(Long auctionProductId) {
         AuctionProduct auctionProduct = auctionProductRepository.findById(auctionProductId)
                 .orElseThrow(() -> new RuntimeException("Auction product not found"));
 
+        // 경매 종료 후 저장
         auctionProduct.endAuction();
         auctionProductRepository.save(auctionProduct);
     }
 
+    //입금 대기 상품
     @Scheduled(cron = "0 0 0 * * ?")
     public void checkAuctionStatus() {
-        List<AuctionProduct> auctionProducts = auctionProductRepository.findByAuctionProductStatus(AuctionProductStatus.SOLD);
+        List<AuctionProduct> auctionProducts = auctionProductRepository.findByAuctionProductStatus(AuctionProductStatus.PENDING);
 
         for (AuctionProduct auctionProduct : auctionProducts) {
             if (auctionProduct.getUpdatedAt().plusDays(1).isBefore(LocalDateTime.now()) && !isPaymentConfirmed(auctionProduct)) {
-                auctionProduct.selectNextHighestBidder();
+                auctionProduct.selectNextHighestBid();
                 auctionProductRepository.save(auctionProduct);
             }
         }

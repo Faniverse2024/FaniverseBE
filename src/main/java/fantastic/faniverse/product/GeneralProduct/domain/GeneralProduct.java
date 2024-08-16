@@ -1,4 +1,5 @@
 package fantastic.faniverse.product.GeneralProduct.domain;
+
 import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
 import jakarta.persistence.*;
@@ -10,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name= "GeneralProduct")
+@Table(name = "GeneralProduct")
 @Entity
 @DiscriminatorValue("general_product")
 public class GeneralProduct extends Product {
@@ -18,30 +19,24 @@ public class GeneralProduct extends Product {
     @Column(name = "price")
     private double price;
 
-    // 상품 상태 변경
-    @Setter
-    @Column(name = "generalProductStatus")
+    // 상품 상태
     @Enumerated(EnumType.STRING)
+    @Column(name = "generalProductStatus")
     private GeneralProductStatus generalProductStatus;
 
-    //상품 정보 변경
     @Override
-    public void update(Product product){
+    public void update(Product product) {
         super.update(product);
         if (product instanceof GeneralProduct) {
-            this.price = product.getPrice();
+            this.price = ((GeneralProduct) product).getPrice();
+            this.generalProductStatus = ((GeneralProduct) product).getGeneralProductStatus();
         }
     }
 
     @Override
     public ProductDetailsResponse toProductDetail() {
         return ProductDetailsResponse.builder()
-                .product(this)
                 .build();
-    }
-
-    public void setStatus(GeneralProductStatus status) {
-        this.generalProductStatus = status;
     }
 
     @Override
@@ -49,7 +44,11 @@ public class GeneralProduct extends Product {
         return price;
     }
 
-    public GeneralProductStatus getStatus() {
+    public GeneralProductStatus getGeneralProductStatus() {
         return generalProductStatus;
+    }
+
+    public void setStatus(GeneralProductStatus status) {
+        this.generalProductStatus = status;
     }
 }

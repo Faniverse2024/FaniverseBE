@@ -18,5 +18,8 @@ public abstract class ProductRegisterRequest {
     // 내용을 반환하는 메서드
     @NotEmpty(message = "상품 설명 입력은 필수입니다.")
     private String content;
+
     private MultipartFile image;
+
+    private String imageUrl;
 }

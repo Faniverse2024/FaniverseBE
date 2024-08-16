@@ -7,6 +7,8 @@ import fantastic.faniverse.community.domain.Post;
 import fantastic.faniverse.community.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/post")
 public class PostController {
     private final PostService postService;
+    private static final Logger logger = LoggerFactory.getLogger(PostController.class);
 
     @GetMapping("/search")
     public ResponseEntity<Object> searchPostsByTitle(
@@ -32,7 +35,6 @@ public class PostController {
                 .map(PostResponse::convertPostResponse).collect(Collectors.toList());
         return ResponseEntity.ok(list);
     }
-
 
     @GetMapping("/{postId}")
     public ResponseEntity<Object> getPost(
@@ -55,14 +57,18 @@ public class PostController {
         return ResponseEntity.ok(list);
     }
 
-
     @PostMapping("/create")
     public ResponseEntity<Object> createPost(
             @RequestBody @Validated PostCreateRequest request,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            logger.error("User not logged in or session expired");
+            return ResponseEntity.status(401).body("User not logged in or session expired");
+        }
         postService.createPost(request.toEntity(), userId);
+        logger.info("User ID: " + userId + " created a post.");
         return ResponseEntity.ok().build();
     }
 
@@ -72,8 +78,13 @@ public class PostController {
             @PathVariable("postId") Long postId,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            logger.error("User not logged in or session expired");
+            return ResponseEntity.status(401).body("User not logged in or session expired");
+        }
         postService.updatePost(updateForm.toEntity(), postId, userId);
+        logger.info("User ID: " + userId + " updated Post ID: " + postId);
         return ResponseEntity.ok().build();
     }
 
@@ -82,8 +93,13 @@ public class PostController {
             @PathVariable("postId") Long postId,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            logger.error("User not logged in or session expired");
+            return ResponseEntity.status(401).body("User not logged in or session expired");
+        }
         postService.deletePost(postId, userId);
+        logger.info("User ID: " + userId + " deleted Post ID: " + postId);
         return ResponseEntity.ok().build();
     }
 
@@ -92,8 +108,13 @@ public class PostController {
             @PathVariable("postId") Long postId,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("user");
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            logger.error("User not logged in or session expired");
+            return ResponseEntity.status(401).body("User not logged in or session expired");
+        }
         postService.likesPost(postId, userId);
+        logger.info("User ID: " + userId + " liked Post ID: " + postId);
         return ResponseEntity.ok().build();
     }
 }

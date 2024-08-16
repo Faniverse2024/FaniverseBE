@@ -7,7 +7,7 @@ public enum AuctionProductStatus {
     BID("경매 중"),
     FAIL("경매무산"),
     SOLD("경매완료"),
-    Pending("입금 대기");
+    PENDING("입금 대기");
 
     private final String value;
 

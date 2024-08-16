@@ -4,6 +4,7 @@ import fantastic.faniverse.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -38,4 +39,5 @@ public class AuctionBid {
         this.bidAmount = bidAmount;
         this.bidTime = LocalDateTime.now();
     }
+
 }
