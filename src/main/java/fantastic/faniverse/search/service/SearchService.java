@@ -45,7 +45,7 @@ public class SearchService {
                 .collect(Collectors.toList());
     }
 
-    //상품 정렬 (고가, 저가, 최신, 좋아요 순)
+    //상품 정렬 (고가, 저가, 최신순)
     public List<ProductDetailsResponse> filterProducts(String searchWord, String sortBy, Long userId) {
         // 검색어에 맞는 상품을 검색
         List<ProductDetailsResponse> filteredProducts = searchProducts(userId, searchWord);
