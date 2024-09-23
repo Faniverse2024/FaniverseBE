@@ -5,6 +5,13 @@
 # Gradle files
 .gradle/
 build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### applicationsyml ###
+src/main/resources/application.yml
+src/main/resources/handy-curve-428107-k7-6d58aaca3454.json
 
 # Local configuration file (sdk path, etc)
 local.properties
