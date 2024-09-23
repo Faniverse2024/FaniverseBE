@@ -75,12 +75,43 @@ public class GeneralProductServiceImpl implements GeneralProductService {
 
 
     @Override
-    public void updateGeneralProductStatus(Long id, GeneralProductStatus status) {
+    public void updateGeneralProductStatus(Long id, GeneralProductStatus newStatus) {
         GeneralProduct product = generalProductRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("상품을 찾을 수 없습니다"));
 
-        product.setStatus(status);
+        // 상태 변경에 따른 검증 로직 추가
+        GeneralProductStatus currentStatus = product.getGeneralProductStatus();
+
+        if (newStatus == GeneralProductStatus.COMPLETED) {
+            if (currentStatus != GeneralProductStatus.RESERVATION) {
+                throw new IllegalStateException("상품이 예약된 상태가 아니면 판매 완료로 변경할 수 없습니다.");
+            }
+            completeProductSale(product);
+        } else if (newStatus == GeneralProductStatus.RESERVATION) {
+            if (currentStatus != GeneralProductStatus.SALE) {
+                throw new IllegalStateException("상품이 판매중인 상태에서만 예약 상태로 변경할 수 있습니다.");
+            }
+            reserveProduct(product);
+        } else if (newStatus == GeneralProductStatus.SALE) {
+            if (currentStatus == GeneralProductStatus.COMPLETED) {
+                throw new IllegalStateException("판매 완료된 상품은 다시 판매중 상태로 변경할 수 없습니다.");
+            }
+            product.setStatus(GeneralProductStatus.SALE);
+        }
+
+        // 상태 변경 저장
+        product.setStatus(newStatus);
         generalProductRepository.save(product);
+    }
+
+    private void completeProductSale(GeneralProduct product) {
+        // 판매 완료 처리 로직 (예: 판매 기록 저장, 알림 발송 등)
+        System.out.println("Product " + product.getId() + " has been marked as sold.");
+    }
+
+    private void reserveProduct(GeneralProduct product) {
+        // 예약 처리 로직 (예: 예약 알림 발송 등)
+        System.out.println("Product " + product.getId() + " has been reserved.");
     }
 
     @Override
