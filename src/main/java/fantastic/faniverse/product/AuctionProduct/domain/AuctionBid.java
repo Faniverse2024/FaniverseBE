@@ -3,13 +3,15 @@ package fantastic.faniverse.product.AuctionProduct.domain;
 import fantastic.faniverse.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "AuctionBid")
 public class AuctionBid {
@@ -27,7 +29,7 @@ public class AuctionBid {
     private User user;
 
     @Column(nullable = false)
-    private Double bidAmount;
+    private double bidAmount;
 
     @Column(nullable = false)
     private LocalDateTime bidTime;
