@@ -29,9 +29,8 @@ public class AuctionProduct extends Product {
     @Column(name = "startingPrice", nullable = false)
     private double startingPrice;
 
-    @Nullable
     @Column(name = "finalPrice")
-    private Double finalPrice;
+    private double finalPrice = 0.0;
 
     @OneToOne
     @Nullable
@@ -58,7 +57,7 @@ public class AuctionProduct extends Product {
         return startingPrice;
     }
 
-    public boolean placeBid(User user, Double bidAmount) {
+    public boolean placeBid(User user, double bidAmount) {
         AuctionBid newBid = new AuctionBid(this, user, bidAmount);
 
         // 중복된 사용자의 입찰은 허용하지 않음
@@ -78,6 +77,8 @@ public class AuctionProduct extends Product {
 
     //현재 최고 입찰가
     public AuctionBid getWinningBidNow(AuctionProduct auctionProduct) {
+        System.out.println("getWinningBidNow() called for auctionProduct: " + auctionProduct.getId());
+
         Optional<AuctionBid> highestBid = auctionProduct.getBids().stream()
                 .max(Comparator.comparing(AuctionBid::getBidAmount));
 
