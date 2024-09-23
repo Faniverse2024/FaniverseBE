@@ -35,8 +35,7 @@ public class GeneralProduct extends Product {
 
     @Override
     public ProductDetailsResponse toProductDetail() {
-        return ProductDetailsResponse.builder()
-                .build();
+        return new ProductDetailsResponse(this);
     }
 
     @Override
@@ -44,9 +43,6 @@ public class GeneralProduct extends Product {
         return price;
     }
 
-    public GeneralProductStatus getGeneralProductStatus() {
-        return generalProductStatus;
-    }
 
     public void setStatus(GeneralProductStatus status) {
         this.generalProductStatus = status;
