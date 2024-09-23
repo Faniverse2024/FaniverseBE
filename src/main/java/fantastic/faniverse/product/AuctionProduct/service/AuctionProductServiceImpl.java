@@ -30,6 +30,7 @@ public class AuctionProductServiceImpl implements AuctionProductService {
     private final ImageUploadService imageUploadService;
     private final ProductService productService;
 
+    //경매 상품 등록
     @Override
     public Long saveAuctionProduct(AuctionProductRegisterRequest request, Long userId) throws IOException {
         // 사용자 검증
@@ -52,6 +53,7 @@ public class AuctionProductServiceImpl implements AuctionProductService {
         return auctionProduct.getId(); // 반환할 값 확인
     }
 
+    //경매 상품 상태 전환
     @Override
     public void updateAuctionProductStatus(Long id, AuctionProductStatus status) {
         AuctionProduct auctionProduct = auctionProductRepository.findById(id)
@@ -60,16 +62,9 @@ public class AuctionProductServiceImpl implements AuctionProductService {
         auctionProductRepository.save(auctionProduct);
     }
 
+    //경매 입찰
     @Override
-    public void setAuctionEndDate(Long id, LocalDateTime endDate) {
-        AuctionProduct auctionProduct = auctionProductRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Auction product not found"));
-        auctionProduct.setEndDate(endDate);
-        auctionProductRepository.save(auctionProduct);
-    }
-
-    @Override
-    public boolean placeBid(Long auctionProductId, User user, Double bidAmount) {
+    public boolean placeBid(Long auctionProductId, User user, double bidAmount) {
         AuctionProduct auctionProduct = auctionProductRepository.findById(auctionProductId)
                 .orElseThrow(() -> new RuntimeException("Auction product not found"));
 
@@ -79,6 +74,7 @@ public class AuctionProductServiceImpl implements AuctionProductService {
         return isBidPlaced;
     }
 
+    //경매 입찰 취소
     @Override
     public boolean cancelBid(Long bidId) {
         AuctionBid auctionBid = auctionBidRepository.findById(bidId)
@@ -88,6 +84,7 @@ public class AuctionProductServiceImpl implements AuctionProductService {
         return true;
     }
 
+    //경매 상품 상태 확인
     @Scheduled(cron = "0 * * * * ?") // 매 분마다 실행
     public void checkAndEndAuctions() {
         List<AuctionProduct> ongoingAuctions = auctionProductRepository.findByAuctionProductStatus(AuctionProductStatus.BID);
@@ -98,15 +95,6 @@ public class AuctionProductServiceImpl implements AuctionProductService {
                 auctionProductRepository.save(auctionProduct);
             }
         }
-    }
-
-    public void endAuction(Long auctionProductId) {
-        AuctionProduct auctionProduct = auctionProductRepository.findById(auctionProductId)
-                .orElseThrow(() -> new RuntimeException("Auction product not found"));
-
-        // 경매 종료 후 저장
-        auctionProduct.endAuction();
-        auctionProductRepository.save(auctionProduct);
     }
 
     //입금 대기 상품
@@ -122,10 +110,12 @@ public class AuctionProductServiceImpl implements AuctionProductService {
         }
     }
 
+    //경매 상태 SOLD인지 Check
     private boolean isPaymentConfirmed(AuctionProduct auctionProduct) {
         return auctionProduct.getAuctionProductStatus() == AuctionProductStatus.SOLD;
     }
 
+    //경매 상태 SOLD 전환
     public boolean confirmPayment(Long productId) {
         AuctionProduct auctionProduct = auctionProductRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Auction product not found"));

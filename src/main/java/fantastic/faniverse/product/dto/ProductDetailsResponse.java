@@ -1,9 +1,7 @@
 package fantastic.faniverse.product.dto;
 
-import fantastic.faniverse.Exception.NoBidderException;
-import fantastic.faniverse.product.AuctionProduct.domain.AuctionBid;
 import fantastic.faniverse.product.AuctionProduct.domain.AuctionProduct;
-import fantastic.faniverse.product.AuctionProduct.domain.AuctionProductStatus;
+import fantastic.faniverse.product.AuctionProduct.dto.AuctionBidResponse;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
 import fantastic.faniverse.product.domain.Product;
 import lombok.AllArgsConstructor;
@@ -12,8 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
@@ -25,13 +21,13 @@ public class ProductDetailsResponse {
         private String title;
         private String category;
         private String content;
-        private Double startingPrice;
+        private double startingPrice;
         private LocalDateTime endDate;
         private String status;
-        private Double finalPrice;
-        private Double price;
+        private double finalPrice;
+        private double price;
         private LocalDateTime createdAt;
-        private AuctionBid winningBid;
+        private AuctionBidResponse winningBid;
 
         //@Builder
         public ProductDetailsResponse(Product product) {
@@ -49,12 +45,9 @@ public class ProductDetailsResponse {
                         this.endDate = auctionProduct.getEndDate();
                         this.status = auctionProduct.getAuctionProductStatus().getValue();
                         this.finalPrice = auctionProduct.getFinalPrice();
-                        this.winningBid = auctionProduct.getWinningBidNow(auctionProduct);
+                        if (auctionProduct.getWinningBid() != null) {
+                                this.winningBid = new AuctionBidResponse(auctionProduct.getWinningBid());
+                        }
                 }
         }
-
-        public double getPrice() {
-                return this.price != null ? this.price : (this.startingPrice != null ? this.startingPrice : 0.0);
-        }
-
 }

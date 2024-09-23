@@ -2,6 +2,7 @@ package fantastic.faniverse.product.controller;
 
 import fantastic.faniverse.chat.application.ChatRoomService;
 import fantastic.faniverse.chat.domain.ChatRoom;
+import fantastic.faniverse.product.AuctionProduct.domain.AuctionProduct;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProductStatus;
 import fantastic.faniverse.product.GeneralProduct.dto.GeneralProductRegisterRequest;
@@ -14,6 +15,7 @@ import fantastic.faniverse.product.ProductImage.ImageUploadRequest;
 import fantastic.faniverse.product.ProductImage.ImageUploadService;
 import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
+import fantastic.faniverse.product.dto.ProductListResponse;
 import fantastic.faniverse.product.service.ProductServiceImpl;
 import fantastic.faniverse.user.entity.User;
 import fantastic.faniverse.user.repository.UserRepository;
@@ -52,10 +54,11 @@ public class ProductController {
 
     // 전체 상품 리스트 출력
     @GetMapping("/list")
-    public ResponseEntity<List<ProductDetailsResponse>> getProducts(HttpSession session) {
+    public ResponseEntity<List<ProductListResponse>> getProducts(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        List<ProductDetailsResponse> products = productService.findAllProducts().stream()
-                .map(ProductDetailsResponse::new)
+        // 상품 목록 조회
+        List<ProductListResponse> products = productService.findAllProducts().stream()
+                .map(ProductListResponse::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(products);
     }
@@ -204,8 +207,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<?> getProductDetail(
             HttpSession session,
-            @PathVariable Long productId,
-            @RequestParam Long roomId) {
+            @PathVariable Long productId) {
 
         // 세션에서 userId 가져오기
         Long userId = (Long) session.getAttribute("userId");
@@ -216,18 +218,11 @@ public class ProductController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 제품 조회
+        // 상품 조회
         Product product = productService.findOne(productId);
         if (product == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found.");
         }
-
-        // 채팅방 조회
-        ChatRoom chatRoom = chatRoomService.findChatRoomById(roomId, user, productId);
-        if (chatRoom == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Chat room not found.");
-        }
-
         // ProductDetailsResponse 객체로 변환
         ProductDetailsResponse productDetail = product.toProductDetail();
         return ResponseEntity.ok(productDetail);
@@ -264,26 +259,24 @@ public class ProductController {
 
     // 홈화면 - 최근 등록된 상품 조회, 카테고리별 상품 조회
     @GetMapping("/home")
-    public ResponseEntity<Map<String, List<ProductDetailsResponse>>> getHomePage(
-            HttpSession session,
-            @RequestParam(required = false) List<String> categories) {
+    public ResponseEntity<Map<String, List<ProductListResponse>>> getHomePage(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
 
-        List<ProductDetailsResponse> recentProducts = productService.getRecentProducts(); // 최근 상품 10개
-        List<ProductDetailsResponse> firstItemInCategory = productService.getProductsByCategory(categories); // 카테고리별 상품 11개
+        // 자식 카테고리가 있는 경우 자식 카테고리만 포함, 부모 카테고리가 없는 경우 부모 카테고리만 포함
+        List<String> categories = List.of(
+                "걸그룹", "보이그룹", "솔로", "트로트", "기타",  // 음악 카테고리의 자식들
+                "축구", "농구", "배구", "야구",  // 스포츠 카테고리의 자식들
+                "애니", "게임"  // 자식이 없는 카테고리
+        );
 
-        Map<String, List<ProductDetailsResponse>> response = Map.of(
+        List<ProductListResponse> recentProducts = productService.getRecentProducts(); // 최근 상품 10개
+        List<ProductListResponse> firstItemInCategory = productService.getProductsByCategory(categories); // 카테고리별 상품 11개
+
+        Map<String, List<ProductListResponse>> response = Map.of(
                 "recentProducts", recentProducts,
                 "firstItemInCategory", firstItemInCategory
         );
 
         return ResponseEntity.ok(response);
-    }
-
-    // 카테고리 리스트를 가져옴
-    private List<String> getCategoryList() {
-        return Stream.of(ProductCategory.values())
-                .map(ProductCategory::getValue)
-                .collect(Collectors.toList());
     }
 }

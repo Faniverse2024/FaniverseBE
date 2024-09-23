@@ -14,9 +14,7 @@ import java.time.LocalDateTime;
 public interface AuctionProductService {
     Long saveAuctionProduct(AuctionProductRegisterRequest request, Long userId) throws IOException;
     void updateAuctionProductStatus(Long id, AuctionProductStatus status);
-    void setAuctionEndDate(Long id, LocalDateTime endDate);
-    boolean placeBid(Long auctionProductId, User userId, Double bidAmount);
+    boolean placeBid(Long auctionProductId, User userId, double bidAmount);
     boolean cancelBid(Long bidId);
-    void endAuction(Long auctionProductId);
     boolean confirmPayment(Long productId);
 }

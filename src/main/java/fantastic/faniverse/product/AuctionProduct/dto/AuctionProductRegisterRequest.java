@@ -16,14 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AuctionProductRegisterRequest extends ProductRegisterRequest {
     @NotEmpty(message = "시작 가격 입력은 필수입니다.")
-    private Double startingPrice;
+    private double startingPrice;
 
     @NotEmpty(message = "경매 마감 기한 입력은 필수입니다.")
     private LocalDateTime endDate;
-
-    public double getStartingPrice(){
-        return startingPrice;
-    }
 
     public AuctionProduct toAuctionProductEntity(String imageUrl) {
         return AuctionProduct.builder()
