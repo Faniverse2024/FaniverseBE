@@ -1,18 +1,23 @@
 package fantastic.faniverse.keyword.service;
 
 import fantastic.faniverse.keyword.dto.KeywordDto;
+import fantastic.faniverse.keyword.dto.KeywordProductDto;
 import fantastic.faniverse.keyword.entity.Keyword;
 import fantastic.faniverse.keyword.repository.KeywordRepository;
 import fantastic.faniverse.product.domain.Product;
+import fantastic.faniverse.product.dto.GeneralProductDetailResponse;
 import fantastic.faniverse.product.dto.ProductDto;
 import fantastic.faniverse.product.repository.ProductRepository;
 import fantastic.faniverse.product.service.ProductService;
 import fantastic.faniverse.user.entity.User;
 import fantastic.faniverse.user.repository.UserRepository;
+import fantastic.faniverse.wishlist.entity.Wishlist;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +63,7 @@ public class KeywordService {
         return keywordRepository.save(keyword);
     }
 
-    // 해당 유저의 키워드 조회 (DTO 반환)
+    // 유저의 키워드 조회
     public List<KeywordDto> findKeywordsByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -81,26 +86,24 @@ public class KeywordService {
         return "Keyword deleted successfully";
     }
 
-    // 키워드로 상품 찾기 (DTO 반환)
-    public List<ProductDto> findProductsByKeyword(String keyword) {
-        // 엔티티 리스트 조회
-        List<Product> products = productRepository.findByTitleContaining(keyword);
 
-        // 엔티티 리스트 -> Dto 리스트로 변환
-        return products.stream()
-                .map(product -> new ProductDto(
-                        product.getId(),
-                        product.getTitle(),
-                        product.getContent(),
-                        product.getCategory(),
-                        product.getImageUrl(),
-                        product.getCreatedAt(),
-                        product.getUpdatedAt()
-                ))
-                .collect(Collectors.toList());
-    }
 
-    // 유저의 키워드에 따라 상품 찾기 (DTO 반환)
+
+
+
+    // 키워드로 상품 찾기
+   public List<KeywordProductDto> findProductsByKeyword(String keyword) {
+        return productRepository.findProductsByKeyword(keyword);
+   }
+
+
+
+
+
+
+
+
+    // 유저의 키워드에 따라 상품 찾기
     public Map<String, List<ProductDto>> findProductsByUserKeywords(Long userId) {
         List<KeywordDto> keywordDtos = findKeywordsByUserId(userId);  // KeywordDto로 변경
         Map<String, List<ProductDto>> keywordToProductsMap = new HashMap<>();

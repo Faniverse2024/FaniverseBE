@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,7 +27,9 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto, HttpSession session) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto loginRequestDto,
+                                                  HttpSession session,
+                                                  HttpServletResponse response) {
         if (loginRequestDto.getEmail() == null || loginRequestDto.getPassword() == null) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -39,6 +43,13 @@ public class AuthController {
 
         // 세션에 userId 저장
         session.setAttribute("userId", user.getId());
+
+        // 쿠키 설정
+        Cookie cookie = new Cookie("JSESSIONID", session.getId());
+        cookie.setHttpOnly(true); // 클라이언트에서 접근 불가
+        cookie.setPath("/"); // 쿠키 유효 범위
+        cookie.setMaxAge(-1); // 세션 쿠키
+        response.addCookie(cookie); // 쿠키 추가
 
         // User 객체를 LoginResponseDto로 변환
         LoginResponseDto loginResponseDto = new LoginResponseDto(user.getId(), user.getEmail(), user.getUsername());

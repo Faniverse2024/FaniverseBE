@@ -112,4 +112,5 @@ public class ProductServiceImpl implements ProductService {
         auctionProductRepository.save(auctionProduct);
         return auctionProduct.getId();
     }
+
 }

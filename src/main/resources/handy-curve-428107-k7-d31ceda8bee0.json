@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "handy-curve-428107-k7",
+  "private_key_id": "d31ceda8bee06a274e82c0e5ed2ced8f3330c95d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDmTpqsY14PySAX\nth+LtmFHKnyzMTiXRniSHEsXHz2E/+5eQZls1CSrtW80CnSEE3PWHpq9ZQgRhVUI\n9futc6CuTiS/3rGQOXdCtxtODE2nK7mr+JdkA2fHLg/O7YQhGseB2WWu1FJSjCZ3\nIVrVercQ4D3f+Q/4fiN8RXBLc8F+S0KrSSFjEqB6GY1tpcLSrWEYhFD6oTHWY6SE\nTvlwREpUUr/NwZViP18fMngWnf0hXZiNQa7LJKkANzg9qaW1+ie6Yp79mv1n2XaN\nXBYzoozeEqX+8pMOWl2FHmc4eaZAeJOTCJ3RmbSojn9pnBvP/iIgiIKOD7g54NSo\ndRspZpzVAgMBAAECggEAFb04CsCrGXiwf6clzXrO2OMGTVB+mSzs5vcmZrgrXEQK\nPI8a9okEgx7HsJUHZYuD2iNzvh/sxeFHjbvRC2Yy4HEo3+GbR36yfAjWWiTS1E5O\nIuZUEqaNo7anMFmpfgnN6OWxRvJCE7T9+9huqgsA1RDNq7gR+AX0FIq7bFaGCQUk\nw35o0+jchAySYgx+Pes8aisREUTdtBTSYTJ4XZz/DHQ1ZlvnSn6eRK8SBhpthNwF\n3GZjg7LDH20tTFTzuSpBCR2c9KrtZFD6xAmDps45NloPSg2rGtJ3b61lEkQGvJ40\nCGTpD7kh9K+roOpiFAvbbV4pvhKG4lvbVxAQ21IYqwKBgQD6mUdCr/Mt4ll+fRyW\nUYCNfVTRmwKsQVKiOxDlq/WFtmYt6GHtOd2yCr8TTyDOC2C4h0TotY/jreAwNkPI\nUEmlOUEQk9Nff6bbWk5mmy/Vg3p4cy8QlQZboQsJB0VhJI7FMoVQY6h5xz8Kn/LE\nCob23WZd1azltCoRGiNYfo9Q6wKBgQDrRVznxR3Q690eYlYcAqYHi56ZqIZAhE4w\nGlIeG+ngl/fYiIv1Kw3ytuJk4CJmLM08CnlWz0R334LqTxN7xUxT7wJ5l88ayGvO\ntpcmutXawrHuypdazx5LubTxcFfaHzu5Sdu2IQLE0qmfdON+HYREh+TREbvb4uze\n0Q9IUwBZPwKBgHOJDYCibERgUhBuECsBgno5KUzF4bKXH0jqYHzzDexKzsslk1hy\n0FJQgA2f8qjsN/h7bPq5EpDOzkiMDC4jTgDd57CD5vTlfoEtHm5R5/jReDpmKHHF\nszu1gMf10TfbSfOCulH40GjswpTcb2mQzO6t3o8uf1sb+DUQTvFy0BJnAoGBAJsL\nQfeHQmftF/IvEdoxsKKmUyWmFpsr1a8DmXw4Hv+ghnfPPJScA/wgo7+gqWq2OaZI\nrMAVpWRuCoNJC2j0k6F4kCP7dEONMuauE5w1YjthNQtNvULd3XQ/9MtroqmfDafE\n0aMLzBxTS+9Gg6kX4JOdDqDs0+VLfZg1I6Ig+MjXAoGAJsd1v7Agl4N+JK6NrPDH\nwyOpfmc6vmvnJc5J4sl99Ayypzr0xcD07QartTg0tw4neWdLsBBe39x/cqHO6RqQ\n/UYypyPbleQtbjZ0pWphNEBL7JhJg+iD5Qkxfo6aobzIO7Of0aCFhEa4RZ63HTpW\nFqFSEvovQxkWMCVmtGrEC5Y=\n-----END PRIVATE KEY-----\n",
+  "client_email": "storage-access@handy-curve-428107-k7.iam.gserviceaccount.com",
+  "client_id": "107201101518955891133",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/storage-access%40handy-curve-428107-k7.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

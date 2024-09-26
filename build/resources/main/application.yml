@@ -3,9 +3,9 @@ spring:
     name: faniverse
 
   datasource:
-    url: jdbc:mysql://34.134.108.54:3306/faniverseDB?useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/FaniverseDB?useSSL=false&serverTimezone=Asia/Seoul
     username: root
-    password: sungshin
+
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -19,8 +19,9 @@ cloud:
   gcp:
     storage:
       credentials:
-        location: classpath:handy-curve-428107-k7-6d58aaca3454.json
+        location: classpath:handy-curve-428107-k7-d31ceda8bee0.json
       project-id: handy-curve-428107-k7
+      bucket: faniverse-bucket
 
 server:
   port: 8080

@@ -50,6 +50,7 @@ public class ProductDetailsResponse {
                         this.status = auctionProduct.getAuctionProductStatus().getValue();
                         this.finalPrice = auctionProduct.getFinalPrice();
                         this.winningBid = auctionProduct.getWinningBidNow(auctionProduct);
+
                 }
         }
 
