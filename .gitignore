@@ -14,3 +14,15 @@
 /src/main/resources/handy-curve-428107-k7-6d58aaca3454.json
 /src/main/resources/handy-curve-428107-k7-d31ceda8bee0.json
 /src/main/resources/application.yml
+
+# Gradle files
+.gradle/
+build/
+
+# Application files
+*.bin
+*.lock
+
+# IDE files
+.idea/
+*.iml
