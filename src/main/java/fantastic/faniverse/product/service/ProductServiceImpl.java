@@ -6,8 +6,10 @@ import fantastic.faniverse.product.AuctionProduct.domain.AuctionProductStatus;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProduct;
 import fantastic.faniverse.product.GeneralProduct.repository.GeneralProductRepository;
 import fantastic.faniverse.product.GeneralProduct.domain.GeneralProductStatus;
+import fantastic.faniverse.product.ProductCategory.domain.ProductCategory;
 import fantastic.faniverse.product.dto.ProductDetailsResponse;
 import fantastic.faniverse.product.dto.ProductDto;
+import fantastic.faniverse.product.dto.ProductListResponse;
 import fantastic.faniverse.product.repository.ProductRepository;
 import fantastic.faniverse.product.domain.Product;
 import fantastic.faniverse.user.entity.User;
@@ -61,56 +63,32 @@ public class ProductServiceImpl implements ProductService {
 
     //홈화면 - 최근 등록된 상품
     @Override
-    public List<ProductDetailsResponse> getRecentProducts() {
+    public List<ProductListResponse> getRecentProducts() {
         return productRepository.findTop10ByOrderByCreatedAtDesc(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
-                .map(product -> product.toProductDetail())
+                .map(ProductListResponse::new)
                 .collect(Collectors.toList());
     }
+
 
     //카테고리별 상품
     @Override
-    public List<ProductDetailsResponse> getProductsByCategory(List<String> categories) {
+    public List<ProductListResponse> getProductsByCategory(List<String> categories) {
         // 각 카테고리(총 11개)에서 상품 1개씩 반환
         // 각 카테고리에서 첫 번째 상품만 가져옴
         return categories.stream()
-                .flatMap(category -> productRepository.findByCategory(category)
-                        .stream()
-                        .findFirst()
-                        .map(Product::toProductDetail)
-                        .stream())
+                .flatMap(categoryTitle -> {
+                    // 자식 카테고리 가져오기
+                    List<String> childCategories = ProductCategory.getChildCategories(categoryTitle);
+
+                    // 자식 카테고리가 있는 경우 자식 카테고리에서 상품을 가져옴
+                    return childCategories.stream()
+                            .flatMap(childCategoryTitle -> productRepository.findByCategory(childCategoryTitle)
+                                    .stream()
+                                    .findFirst()  // 첫 번째 상품만 가져오기
+                                    .map(ProductListResponse::new)
+                                    .stream());
+                })
                 .collect(Collectors.toList());
     }
-
-    //가능한 GeneralProduct의 Status 출력
-    public List<GeneralProductStatus> getChangeableStatusForGeneralProduct(GeneralProductStatus status) {
-        return stream(GeneralProductStatus.values())
-                .filter((item) -> item != status).collect(Collectors.toList());
-    }
-
-
-    //가능한 AuctionProduct의 Status 출력
-    public List<AuctionProductStatus> getChangeableStatusForAuctionProduct(AuctionProductStatus status) {
-        return stream(AuctionProductStatus.values())
-                .filter((item) -> item != status).collect(Collectors.toList());
-    }
-
-    public Long addProduct(GeneralProduct generalProduct, Long userId) {
-        User seller = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        generalProduct.setSeller(seller);
-        generalProductRepository.save(generalProduct);
-        return generalProduct.getId();
-    }
-
-    public Long addProduct(AuctionProduct auctionProduct, Long userId) {
-        User seller = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        auctionProduct.setSeller(seller);
-        auctionProductRepository.save(auctionProduct);
-        return auctionProduct.getId();
-    }
-
 }
