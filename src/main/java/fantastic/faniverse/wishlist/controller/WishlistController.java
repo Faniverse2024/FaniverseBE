@@ -1,7 +1,6 @@
 package fantastic.faniverse.wishlist.controller;
 
-import fantastic.faniverse.wishlist.dto.WishlistDto;
-import fantastic.faniverse.wishlist.dto.WishlistRequestDto;
+import fantastic.faniverse.wishlist.dto.WishlistProductDto;
 import fantastic.faniverse.wishlist.service.WishlistService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +18,16 @@ public class WishlistController {
 
     // 사용자의 wishlist 조회
     @GetMapping("/user")
-    public ResponseEntity<List<WishlistDto>> getCurrentUserWishlist(HttpSession session) {
+    public ResponseEntity<List<WishlistProductDto>> getWishlistProducts(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId != null) {
-            List<WishlistDto> wishlist = wishlistService.getWishlistByUserId(userId);
+            List<WishlistProductDto> wishlist = wishlistService.getWishlistByUserId(userId); // WishlistProductDto로 변경
             return ResponseEntity.ok(wishlist);
         } else {
             return ResponseEntity.status(401).body(null); // Unauthorized
         }
     }
+
 
     // wishlist 항목 추가
     @PostMapping("/add")

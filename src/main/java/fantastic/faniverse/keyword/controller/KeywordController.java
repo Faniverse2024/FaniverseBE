@@ -1,6 +1,7 @@
 package fantastic.faniverse.keyword.controller;
 
 import fantastic.faniverse.keyword.dto.KeywordDto;
+import fantastic.faniverse.keyword.dto.KeywordProductDto;
 import fantastic.faniverse.keyword.entity.Keyword;
 import fantastic.faniverse.keyword.service.KeywordService;
 import fantastic.faniverse.product.domain.Product;
@@ -63,7 +64,7 @@ public class KeywordController {
         }
     }
 
-    // 특정 사용자의 키워드 목록 조회
+    // 사용자의 키워드 목록 조회
     @GetMapping("/user")
     public ResponseEntity<List<KeywordDto>> getUserKeywords(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
@@ -77,12 +78,13 @@ public class KeywordController {
 
     // 단어를 title에 포함하고 있는 상품 목록 조회
     @GetMapping("/")
-    public ResponseEntity<List<ProductDto>> getProductsByKeyword(@RequestParam String keyword) {
-        List<ProductDto> productDtos = keywordService.findProductsByKeyword(keyword);
-        return ResponseEntity.ok(productDtos);
+    public ResponseEntity<List<KeywordProductDto>> getProductsByKeyword(@RequestParam String keyword) {
+        List<KeywordProductDto> keywordProductDtos = keywordService.findProductsByKeyword(keyword);
+        return ResponseEntity.ok(keywordProductDtos);
     }
 
-    // 유저의 각 키워드에 해당하는 상품 목록 조회
+
+    // 유저의 키워드 상품 목록 조회
     @GetMapping("/products")
     public ResponseEntity<Map<String, List<ProductDto>>> getProductsByUserKeywords(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
