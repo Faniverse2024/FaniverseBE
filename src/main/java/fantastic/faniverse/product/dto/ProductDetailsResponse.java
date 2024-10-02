@@ -50,7 +50,4 @@ public class ProductDetailsResponse {
                         }
                 }
         }
-        public double getPrice() {
-                return this.price != null ? this.price : (this.startingPrice != null ? this.startingPrice : 0.0);
-        }
 }
