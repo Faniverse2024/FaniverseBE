@@ -82,13 +82,4 @@ public class KeywordController {
         List<KeywordProductDto> keywordProductDtos = keywordService.findProductsByKeyword(keyword);
         return ResponseEntity.ok(keywordProductDtos);
     }
-
-
-    // 유저의 키워드 상품 목록 조회
-    @GetMapping("/products")
-    public ResponseEntity<Map<String, List<ProductDto>>> getProductsByUserKeywords(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        Map<String, List<ProductDto>> keywordToProductsMap = keywordService.findProductsByUserKeywords(userId);
-        return ResponseEntity.ok(keywordToProductsMap);
-    }
 }
