@@ -95,38 +95,4 @@ public class KeywordService {
    public List<KeywordProductDto> findProductsByKeyword(String keyword) {
         return productRepository.findProductsByKeyword(keyword);
    }
-
-
-
-
-
-
-
-
-    // 유저의 키워드에 따라 상품 찾기
-    public Map<String, List<ProductDto>> findProductsByUserKeywords(Long userId) {
-        List<KeywordDto> keywordDtos = findKeywordsByUserId(userId);  // KeywordDto로 변경
-        Map<String, List<ProductDto>> keywordToProductsMap = new HashMap<>();
-
-        for (KeywordDto keywordDto : keywordDtos) {
-            String keywordValue = keywordDto.getWord();
-            List<Product> products = productRepository.findByTitleContaining(keywordValue);
-
-            List<ProductDto> productDtos = products.stream()
-                    .map(product -> new ProductDto(
-                            product.getId(),
-                            product.getTitle(),
-                            product.getContent(),
-                            product.getCategory(),
-                            product.getImageUrl(),
-                            product.getCreatedAt(),
-                            product.getUpdatedAt()
-                    ))
-                    .collect(Collectors.toList());
-
-            keywordToProductsMap.put(keywordValue, productDtos);
-        }
-
-        return keywordToProductsMap;
-    }
 }
