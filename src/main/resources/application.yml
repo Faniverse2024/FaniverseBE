@@ -3,9 +3,9 @@ spring:
     name: faniverse
 
   datasource:
-    url: jdbc:mysql://localhost:3306/FaniverseDB?useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://34.134.108.54:3306/faniverseDB?useSSL=false&serverTimezone=Asia/Seoul
     username: root
-
+    password: sungshin
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
