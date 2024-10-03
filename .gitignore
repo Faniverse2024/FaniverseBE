@@ -1,3 +1,11 @@
+# env 파일
+.env
+
+# Ignore the build folder
+/build
+# But include the libs folder
+!/build/libs
+
 # Default ignored files
 /shelf/
 /.idea/workspace.xml
@@ -13,26 +21,21 @@
 # 민감 정보 파일
 /src/main/resources/handy-curve-428107-k7-6d58aaca3454.json
 /src/main/resources/handy-curve-428107-k7-d31ceda8bee0.json
-/src/main/resources/application.yml
 
 # Application files
 *.bin
 *.lock
 
-# IDE files
-.idea/
-*.iml
 
 # Created by https://www.toptal.com/developers/gitignore/api/java,intellij,windows,android
 # Edit at https://www.toptal.com/developers/gitignore?templates=java,intellij,windows,android
 
-### Android ###
+
 # Gradle files
 .gradle/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+
+
+
 
 
 # Local configuration file (sdk path, etc)
@@ -197,7 +200,7 @@ fabric.properties
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar
 *.war
 *.nar
 *.ear

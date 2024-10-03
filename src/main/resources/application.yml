@@ -2,10 +2,13 @@ spring:
   application:
     name: faniverse
 
+  config:
+    import: optional:file.env[.properties]
+
   datasource:
-    url: jdbc:mysql://34.134.108.54:3306/faniverseDB?useSSL=false&serverTimezone=Asia/Seoul
-    username: root
-    password: sungshin
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -19,9 +22,9 @@ cloud:
   gcp:
     storage:
       credentials:
-        location: classpath:handy-curve-428107-k7-d31ceda8bee0.json
-      project-id: handy-curve-428107-k7
-      bucket: faniverse-bucket
+        location: ${GCP_STORAGE_CREDENTIALS_JSON}
+      project-id: ${GCP_PROJECT_ID}
+      bucket: ${GCP_BUCKET}
 
 server:
   port: 8080
