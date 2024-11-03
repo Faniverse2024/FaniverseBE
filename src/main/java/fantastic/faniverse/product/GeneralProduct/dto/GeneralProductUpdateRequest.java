@@ -29,6 +29,7 @@ public class GeneralProductUpdateRequest {
     @NotNull(message = "가격 입력은 필수입니다.")
     private double price;
 
+    private Long productId;
     private MultipartFile image;
     private Long sellerId;
     private String imageUrl;
