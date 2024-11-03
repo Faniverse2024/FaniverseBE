@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class ProductDetailsResponse {
+        private Long productId;
+        private Long sellerId;
         private String userName;
         private String imageUrl;
         private String title;
@@ -31,6 +33,8 @@ public class ProductDetailsResponse {
 
         //@Builder
         public ProductDetailsResponse(Product product) {
+                this.productId = product.getId();
+                this.sellerId = product.getSeller().getId();
                 this.imageUrl = product.getImageUrl();
                 this.category = product.getCategory();
                 this.content = product.getContent();
